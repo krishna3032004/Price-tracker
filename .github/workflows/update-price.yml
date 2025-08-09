@@ -1,0 +1,25 @@
+name: Update Product Prices
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"   # Har 12 ghante
+  workflow_dispatch:         # Manual run ka option bhi
+
+jobs:
+  run-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Ya jo bhi tum use kar rahe ho
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run updateprice.js
+        run: node cron/updateprice.js
