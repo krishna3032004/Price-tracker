@@ -74,9 +74,41 @@ const ResultPage = () => {
     };
 
 
+    // useEffect(() => {
+    //     if (!expandedHistory || expandedHistory.length === 0) return;
+
+    //     const fetchPrediction = async () => {
+    //         try {
+    //             const res = await fetch("http://localhost:8000/predict", {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body: JSON.stringify({
+    //                     history: expandedHistory
+    //                 }),
+    //             });
+
+    //             const predictionData = await res.json();
+    //             const formattedPredictionData = predictionData.map(item => ({
+    //                 date: item.ds,
+    //                 predictedPrice: Math.round(item.yhat),  // Round if you want clean prices
+    //             }));
+    //             console.log(formattedPredictionData)
+    //             setPredictedHistory(formattedPredictionData);  // <- store separately
+    //         } catch (error) {
+    //             console.error("Prediction fetch error", error);
+    //         }
+    //     };
+
+    //     fetchPrediction();
+    // }, [expandedHistory]);
+
+
+
     useEffect(() => {
         if (!expandedHistory || expandedHistory.length === 0) return;
-
+    
         const fetchPrediction = async () => {
             try {
                 const res = await fetch("http://localhost:8000/predict", {
@@ -88,21 +120,40 @@ const ResultPage = () => {
                         history: expandedHistory
                     }),
                 });
-
-                const predictionData = await res.json();
-                const formattedPredictionData = predictionData.map(item => ({
-                    date: item.ds,
-                    predictedPrice: Math.round(item.yhat),  // Round if you want clean prices
-                }));
-                console.log(formattedPredictionData)
-                setPredictedHistory(formattedPredictionData);  // <- store separately
+    
+                if (!res.ok) {
+                    console.warn("Prediction API returned an error:", res.status);
+                    setPredictedHistory([]); // Default empty array
+                    return;
+                }
+    
+                let predictionData = [];
+                try {
+                    predictionData = await res.json();
+                } catch (jsonError) {
+                    console.warn("Invalid JSON response from prediction API");
+                    setPredictedHistory([]);
+                    return;
+                }
+    
+                const formattedPredictionData = Array.isArray(predictionData)
+                    ? predictionData.map(item => ({
+                        date: item.ds,
+                        predictedPrice: Math.round(item.yhat),
+                    }))
+                    : [];
+    
+                setPredictedHistory(formattedPredictionData);
+    
             } catch (error) {
-                console.error("Prediction fetch error", error);
+                console.error("Prediction fetch error:", error);
+                setPredictedHistory([]); // Fallback to empty
             }
         };
-
+    
         fetchPrediction();
     }, [expandedHistory]);
+    
 
     useEffect(() => {
         const fetchProduct = async () => {
