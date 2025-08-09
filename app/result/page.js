@@ -5,22 +5,16 @@
 import { ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, } from "recharts";
 import { format, parseISO } from "date-fns";
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 
 
 
 
-const ResultPage = () => {
-    // const searchParams = useSearchParams();
-    // const query = searchParams.get("query");
+function ResultContent() {
+    const searchParams = useSearchParams();
+    const query = searchParams.get("query");
     
-    const searchParams = typeof window !== 'undefined' ? useSearchParams() : null;
-    let query;
-    useEffect(() => {
-        if (!searchParams) return;
-
-        query = searchParams.get("query");
-    }, [searchParams]);
+    
     const [product, setProduct] = useState(null);
     const [expandedHistory, setexpandedHistory] = useState(null);
 
@@ -746,4 +740,12 @@ const ResultPage = () => {
     );
 };
 
-export default ResultPage;
+
+
+export default function ResultPage() {
+    return (
+      <Suspense fallback={<div>Loading search results...</div>}>
+        <ResultContent />
+      </Suspense>
+    );
+  }
