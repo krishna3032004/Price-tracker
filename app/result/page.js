@@ -11,8 +11,16 @@ import { useState, useEffect } from "react";
 
 
 const ResultPage = () => {
-    const searchParams = useSearchParams();
-    const query = searchParams.get("query");
+    // const searchParams = useSearchParams();
+    // const query = searchParams.get("query");
+    
+    const searchParams = typeof window !== 'undefined' ? useSearchParams() : null;
+    let query;
+    useEffect(() => {
+        if (!searchParams) return;
+
+        query = searchParams.get("query");
+    }, [searchParams]);
     const [product, setProduct] = useState(null);
     const [expandedHistory, setexpandedHistory] = useState(null);
 
