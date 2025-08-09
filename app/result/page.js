@@ -174,6 +174,7 @@ function ResultContent() {
                     setProduct(data);
                     console.log(data.priceHistory)
                     expandPriceHistory(data.priceHistory);
+                    setLoading(false)
                 } else {
                     console.log(res)
                     setError("This product was not found in our database, but we’ll start tracking it from now.");
