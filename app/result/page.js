@@ -177,7 +177,8 @@ function ResultContent() {
                     setLoading(false)
                 } else {
                     console.log(res)
-                    setError("This product was not found in our database, but we’ll start tracking it from now.");
+                    setError(data.error)
+                    // setError("This product was not found in our database, but we’ll start tracking it from now.");
                     setProduct(null);
                 }
             } catch (err) {

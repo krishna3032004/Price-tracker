@@ -78,7 +78,7 @@ export async function GET(req) {
 
     // 3. Save the newly scraped product to DB
     const newProduct = await Product.create(scrapedProduct);
-    return new Response(JSON.stringify({ message: "Product was not previously tracked. It has now been added for tracking." }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Product was not previously tracked. It has now been added for tracking." }), { status: 500 });
   } catch (error) {
     console.error("API error:", error);
     return new Response(JSON.stringify({ error: "Internal server error. Please try again later." }), { status: 500 });
