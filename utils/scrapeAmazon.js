@@ -51,11 +51,27 @@
 
 
 
-import puppeteer from 'puppeteer';
+import puppeteer from "puppeteer-core";
+import chromium from "chrome-aws-lambda";
 
 export async function scrapeAmazon(url) {
+  let browser;
   try {
-    const browser = await puppeteer.launch({ headless: "new" });
+    // Vercel AWS Lambda Environment hai to yeh config use hoga
+    const isLambda = !!process.env.AWS_LAMBDA_FUNCTION_VERSION;
+
+    browser = await puppeteer.launch(
+      isLambda
+        ? {
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
+          }
+        : {
+            headless: true, // Local development ke liye
+          }
+    );
     const page = await browser.newPage();
 
     await page.goto(url, { waitUntil: 'networkidle2' });
@@ -112,5 +128,9 @@ export async function scrapeAmazon(url) {
   } catch (err) {
     console.error("Amazon Puppeteer scrape error:", err);
     return null;
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 }
