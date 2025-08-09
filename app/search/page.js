@@ -47,7 +47,7 @@ export default function SearchPage() {
 
   return (
     <div className=" mx-4 md:mx-12 lg:mx-24 min-h-44">
-      <h1 className="text-sm sm:text-base lg:text-lg font-bold my-7">🔎 Search results for "{query}"</h1>
+      <h1 className="text-sm sm:text-base lg:text-lg font-bold my-7">🔎 Search results for &quot;{query}&quot;</h1>
       {results.length === 0 ? (
         <p className='text-xs sm:text-sm lg:text-base text-gray-400'>No products found.</p>
       ) : (
