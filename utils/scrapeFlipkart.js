@@ -88,23 +88,37 @@ import puppeteer from "puppeteer-core";
 export async function scrapeFlipkart(url) {
  let browser = null;
    try {
-    const isDev = process.env.NODE_ENV === "development";
+    // const isDev = process.env.NODE_ENV === "development";
 
-    const executablePath = isDev
-      ? "C:/Program Files/Google/Chrome/Application/chrome.exe"
-      : await chromium.executablePath;
+    // const executablePath = isDev
+    //   ? "C:/Program Files/Google/Chrome/Application/chrome.exe"
+    //   : await chromium.executablePath;
 
-    console.log("chromium.executablePath =", executablePath);
+    // console.log("chromium.executablePath =", executablePath);
+
+    // const launchOptions = {
+    //   args: chromium.args,
+    //   defaultViewport: chromium.defaultViewport,
+    //   headless: chromium.headless,
+    // };
+
+    // if (executablePath) {
+    //   launchOptions.executablePath = executablePath;
+    // }
 
     const launchOptions = {
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      headless: chromium.headless,
-    };
+  args: chromium.args,
+  defaultViewport: chromium.defaultViewport,
+  headless: chromium.headless,
+};
 
-    if (executablePath) {
-      launchOptions.executablePath = executablePath;
-    }
+// Agar chromium.executablePath null hai to launch without it
+if (executablePath) {
+  launchOptions.executablePath = executablePath;
+}
+
+browser = await puppeteer.launch(launchOptions);
+
 
     browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
