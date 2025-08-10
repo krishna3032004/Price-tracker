@@ -90,8 +90,9 @@ export async function scrapeFlipkart(url) {
   try {
     const isDev = process.env.NODE_ENV === "development";
 
+    // get executable path (async)
     const executablePath = isDev
-      ? "C:/Program Files/Google/Chrome/Application/chrome.exe"
+      ? "C:/Program Files/Google/Chrome/Application/chrome.exe" // local chrome path
       : await chromium.executablePath;
 
     if (!executablePath) {
@@ -102,7 +103,7 @@ export async function scrapeFlipkart(url) {
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath,
-      headless: true,
+      headless: chromium.headless,
     });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
