@@ -3,7 +3,7 @@ import connectDB from "@/db/connectDB";
 import { scrapeAmazon } from "@/utils/scrapeAmazon";
 import { scrapeFlipkart } from "@/utils/scrapeFlipkart";
 
-
+export const runtime = 'nodejs';
 
 // Flipkart URL normalization function
 function normalizeFlipkartURL(url) {
