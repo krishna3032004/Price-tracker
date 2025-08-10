@@ -80,10 +80,10 @@
 
 
 
-export const runtime = "nodejs";
-
-import chromium from "chrome-aws-lambda";
-import puppeteer from "puppeteer-core";
+// export const runtime = "nodejs";
+import puppeteer from "puppeteer";
+// import chromium from "chrome-aws-lambda";
+// import puppeteer from "puppeteer-core";
 
 export async function scrapeFlipkart(url) {
  let browser = null;
@@ -106,21 +106,15 @@ export async function scrapeFlipkart(url) {
     //   launchOptions.executablePath = executablePath;
     // }
 
-    const launchOptions = {
-  args: chromium.args,
-  defaultViewport: chromium.defaultViewport,
-  headless: chromium.headless,
-};
+      browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
 
-// Agar chromium.executablePath null hai to launch without it
-if (executablePath) {
-  launchOptions.executablePath = executablePath;
-}
-
-browser = await puppeteer.launch(launchOptions);
+// browser = await puppeteer.launch(launchOptions);
 
 
-    browser = await puppeteer.launch(launchOptions);
+    // browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
 
