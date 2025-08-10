@@ -86,7 +86,6 @@ import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
 
 export async function scrapeFlipkart(url) {
-  let browser;
   try {
     // Vercel AWS Lambda Environment hai to yeh config use hoga
     const executablePath = process.env.AWS_EXECUTION_ENV
