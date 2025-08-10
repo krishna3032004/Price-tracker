@@ -6,8 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "node ./node_modules/chrome-aws-lambda/scripts/download-chromium.js"
+    "lint": "next lint"
   },
   "dependencies": {
     "@sparticuz/chromium": "^138.0.2",
