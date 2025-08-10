@@ -86,16 +86,19 @@ import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
 
 export async function scrapeFlipkart(url) {
-  let browser; // ✅ Declare outside so finally works
+  let browser;
 
   try {
-    const executablePath = await chromium.executablePath;
+    const executablePath =
+      process.env.NODE_ENV === "development"
+        ? "C:/Program Files/Google/Chrome/Application/chrome.exe" // Apna local Chrome path
+        : await chromium.executablePath; // Vercel ka chromium
 
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath, // ✅ Always use chromium path
-      headless: chromium.headless,
+      executablePath,
+      headless: true,
     });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
