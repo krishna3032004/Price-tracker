@@ -2,6 +2,9 @@ import Product from "@/models/Product"; // apna model ka path do
 import connectDB from "@/db/connectDB";
 import nodemailer from "nodemailer"
 
+ 
+export const runtime = "nodejs";
+
 export async function POST(req) {
   try {
     const { productId, name, email } = await req.json();
