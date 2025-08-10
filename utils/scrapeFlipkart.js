@@ -80,24 +80,23 @@
 
 
 
-
+export const runtime = "nodejs";
 
 import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
 
 export async function scrapeFlipkart(url) {
-  let browser;
+  let browser = null;
 
   try {
-    const executablePath =
-      process.env.NODE_ENV === "development"
-        ? "C:/Program Files/Google/Chrome/Application/chrome.exe" // Apna local Chrome path
-        : await chromium.executablePath; // Vercel ka chromium
-
+    // Launch browser based on environment
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath,
+      executablePath:
+        process.env.AWS_EXECUTION_ENV
+          ? await chromium.executablePath // Production (Vercel)
+          : puppeteer.executablePath(),   // Local Dev
       headless: true,
     });
     const page = await browser.newPage();
