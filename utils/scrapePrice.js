@@ -1,6 +1,6 @@
 // utils/scrapePrice.js
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
+import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 
 export const scrapePrice = async (url) => {
   let browser;
@@ -11,35 +11,37 @@ export const scrapePrice = async (url) => {
     browser = await puppeteer.launch(
       isLambda
         ? {
-            args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
-    headless: chromium.headless,
-          }
+          args: chromium.args,
+          executablePath:
+            process.env.NODE_ENV === "production"
+              ? await chromium.executablePath
+              : puppeteer.executablePath(),
+          headless: true,
+        }
         : {
-            headless: true, // Local development ke liye
-          }
+          headless: true, // Local development ke liye
+        }
     );
-  const page = await browser.newPage();
-  await page.goto(url, { waitUntil: 'networkidle2' });
+    const page = await browser.newPage();
+    await page.goto(url, { waitUntil: 'networkidle2' });
 
-  // Flipkart price selector (dynamic)
-  const priceText = await page.$eval('div.Nx9bqj', el => el.innerText).catch(() => null);
+    // Flipkart price selector (dynamic)
+    const priceText = await page.$eval('div.Nx9bqj', el => el.innerText).catch(() => null);
 
-  await browser.close();
-
-  if (!priceText) return null;
-
-  // Clean ₹ and commas
-  const price = parseInt(priceText.replace(/[₹,]/g, ''));
-  return isNaN(price) ? null : price;
-
-}catch (err) {
-  console.error("Flipkart Puppeteer scrape error:", err);
-  return null;
-} finally {
-  if (browser) {
     await browser.close();
+
+    if (!priceText) return null;
+
+    // Clean ₹ and commas
+    const price = parseInt(priceText.replace(/[₹,]/g, ''));
+    return isNaN(price) ? null : price;
+
+  } catch (err) {
+    console.error("Flipkart Puppeteer scrape error:", err);
+    return null;
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
-}
 };

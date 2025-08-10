@@ -82,9 +82,8 @@
 
 
 
-
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
+import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 
 export async function scrapeFlipkart(url) {
   let browser;
@@ -96,9 +95,11 @@ export async function scrapeFlipkart(url) {
       isLambda
         ? {
           args: chromium.args,
-          defaultViewport: chromium.defaultViewport,
-          executablePath: await chromium.executablePath(),
-          headless: chromium.headless,
+          executablePath:
+            process.env.NODE_ENV === "production"
+              ? await chromium.executablePath
+              : puppeteer.executablePath(),
+          headless: true,
         }
         : {
           headless: true, // Local development ke liye
