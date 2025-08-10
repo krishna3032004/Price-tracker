@@ -88,15 +88,19 @@ import puppeteer from "puppeteer-core";
 export async function scrapeFlipkart(url) {
   let browser = null;
 
+
   try {
-    // Puppeteer launch with serverless chromium
+    const isDev = process.env.NODE_ENV === "development";
+
+    const executablePath = isDev
+      ? "C:/Program Files/Google/Chrome/Application/chrome.exe" // Local Chrome path
+      : await chromium.executablePath; // Serverless chromium
+
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: process.env.AWS_REGION 
-        ? await chromium.executablePath()
-        : puppeteer.executablePath(), // Local run ke liye normal puppeteer
-      headless: chromium.headless,
+      executablePath,
+      headless: true,
     });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
