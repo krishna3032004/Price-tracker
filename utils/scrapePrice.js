@@ -3,18 +3,17 @@ import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
 
 export const scrapePrice = async (url) => {
-  try {
-    // Vercel AWS Lambda Environment hai to yeh config use hoga
-    const executablePath = process.env.AWS_EXECUTION_ENV
-    ? await chromium.executablePath
-    : puppeteer.executablePath();
+  let browser; // ✅ Declare outside so finally works
 
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath,
-    headless: true,
-  });
+  try {
+    const executablePath = await chromium.executablePath;
+
+    browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath, // ✅ Always use chromium path
+      headless: chromium.headless,
+    });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
 
