@@ -1,6 +1,6 @@
 // utils/scrapePrice.js
-import puppeteer from "puppeteer-core";
-import chromium from "chrome-aws-lambda";
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 
 export const scrapePrice = async (url) => {
   let browser;
@@ -12,9 +12,9 @@ export const scrapePrice = async (url) => {
       isLambda
         ? {
             args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
           }
         : {
             headless: true, // Local development ke liye

@@ -50,9 +50,8 @@
 
 
 
-
-import puppeteer from "puppeteer-core";
-import chromium from "chrome-aws-lambda";
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 
 export async function scrapeAmazon(url) {
   let browser;
@@ -64,9 +63,9 @@ export async function scrapeAmazon(url) {
       isLambda
         ? {
             args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
           }
         : {
             headless: true, // Local development ke liye

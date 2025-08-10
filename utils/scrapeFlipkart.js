@@ -26,7 +26,7 @@
 //         const priceText = $('div.Nx9bqj').first().text().trim(); // e.g., "₹3,200"
 //         const priceNumber = priceText.replace(/[^\d]/g, ''); // Remove everything except digits
 //         const price = priceNumber ? parseInt(priceNumber) : null;
-        
+
 
 //         // const discountText = $('div.UkUFwK.WW8yVX.yKS4la span').first().text().trim(); // e.g., "34% off"
 //         // const discountMatch = discountText.match(/\d+/); // Match first number in string
@@ -83,9 +83,8 @@
 
 
 
-
-import puppeteer from "puppeteer-core";
-import chromium from "chrome-aws-lambda";
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 
 export async function scrapeFlipkart(url) {
   let browser;
@@ -96,14 +95,14 @@ export async function scrapeFlipkart(url) {
     browser = await puppeteer.launch(
       isLambda
         ? {
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
-          }
+          args: chromium.args,
+          defaultViewport: chromium.defaultViewport,
+          executablePath: await chromium.executablePath(),
+          headless: chromium.headless,
+        }
         : {
-            headless: true, // Local development ke liye
-          }
+          headless: true, // Local development ke liye
+        }
     );
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
@@ -123,7 +122,7 @@ export async function scrapeFlipkart(url) {
 
       return { title, image, mrp, price, discount };
     });
-     
+
     // console.log(result.title)
     // console.log(result.image)
     // console.log(result.price)
@@ -153,7 +152,7 @@ export async function scrapeFlipkart(url) {
       predictionText: "Prediction data not available yet.",
     };
 
-  }catch (err) {
+  } catch (err) {
     console.error("Flipkart Puppeteer scrape error:", err);
     return null;
   } finally {
