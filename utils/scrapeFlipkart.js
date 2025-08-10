@@ -87,23 +87,26 @@ import puppeteer from "puppeteer-core";
 
 export async function scrapeFlipkart(url) {
  let browser = null;
-  try {
+   try {
     const isDev = process.env.NODE_ENV === "development";
 
     const executablePath = isDev
       ? "C:/Program Files/Google/Chrome/Application/chrome.exe"
       : await chromium.executablePath;
 
-    if (!executablePath) {
-      throw new Error("Chromium executable path not found.");
-    }
+    console.log("chromium.executablePath =", executablePath);
 
-    browser = await puppeteer.launch({
+    const launchOptions = {
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath,
       headless: chromium.headless,
-    });
+    };
+
+    if (executablePath) {
+      launchOptions.executablePath = executablePath;
+    }
+
+    browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
 
