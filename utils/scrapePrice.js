@@ -6,18 +6,16 @@ export const scrapePrice = async (url) => {
   let browser;
   try {
     // Vercel AWS Lambda Environment hai to yeh config use hoga
-    const isLambda = !!process.env.AWS_LAMBDA_FUNCTION_VERSION;
+    const executablePath = process.env.AWS_EXECUTION_ENV
+    ? await chromium.executablePath
+    : puppeteer.executablePath();
 
-    browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath:
-        process.env.NODE_ENV === "production"
-          ? await chromium.executablePath
-          : puppeteer.executablePath(),
-      headless: true,
-    }
-
-    );
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath,
+    headless: true,
+  });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
 
