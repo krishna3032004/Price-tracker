@@ -86,15 +86,17 @@ import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
 
 export async function scrapeFlipkart(url) {
-  let browser = null;
-
-
+ let browser = null;
   try {
     const isDev = process.env.NODE_ENV === "development";
 
     const executablePath = isDev
-      ? "C:/Program Files/Google/Chrome/Application/chrome.exe" // Local Chrome path
-      : await chromium.executablePath; // Serverless chromium
+      ? "C:/Program Files/Google/Chrome/Application/chrome.exe"
+      : await chromium.executablePath;
+
+    if (!executablePath) {
+      throw new Error("Chromium executable path not found.");
+    }
 
     browser = await puppeteer.launch({
       args: chromium.args,
