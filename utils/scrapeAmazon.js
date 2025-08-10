@@ -59,18 +59,14 @@ export async function scrapeAmazon(url) {
     const isLambda = !!process.env.AWS_LAMBDA_FUNCTION_VERSION;
 
     browser = await puppeteer.launch(
-      isLambda
-        ? {
-          args: chromium.args,
-          executablePath:
-            process.env.NODE_ENV === "production"
-              ? await chromium.executablePath
-              : puppeteer.executablePath(),
-          headless: true,
-        }
-        : {
-          headless: true, // Local development ke liye
-        }
+      {
+        args: chromium.args,
+        executablePath:
+          process.env.NODE_ENV === "production"
+            ? await chromium.executablePath
+            : puppeteer.executablePath(),
+        headless: true,
+      }
     );
     const page = await browser.newPage();
 
