@@ -89,15 +89,14 @@ export async function scrapeFlipkart(url) {
   let browser = null;
 
   try {
-    // Launch browser based on environment
+    // Puppeteer launch with serverless chromium
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath:
-        process.env.AWS_EXECUTION_ENV
-          ? await chromium.executablePath // Production (Vercel)
-          : puppeteer.executablePath(),   // Local Dev
-      headless: true,
+      executablePath: process.env.AWS_REGION 
+        ? await chromium.executablePath()
+        : puppeteer.executablePath(), // Local run ke liye normal puppeteer
+      headless: chromium.headless,
     });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
