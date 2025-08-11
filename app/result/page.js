@@ -218,7 +218,7 @@ function ResultContent() {
                     setProduct(data);
                     console.log(data.priceHistory)
                     expandPriceHistory(data.priceHistory);
-                    setLoading(false)
+                    // setLoading(false)
                 } else {
                     console.log(res)
                     setError(data.error)
@@ -383,23 +383,23 @@ function ResultContent() {
 
     if (loading) {
         return (
-            <>
-                <div className="text-white text-center py-20 text-base sm:text-xl font-medium animate-pulse">
+            <div >
+                <div className="text-white h-[80vh] flex flex-col justify-center text-center py-20 text-base sm:text-xl font-medium animate-pulse">
 
                     🔍 Searching for the product...
-                    <div className="text-gray-300 text-xs sm:text-sm  font-sans">it may take time longer than usual</div>
+                    <div className="text-gray-300 text-xs sm:text-sm  font-sans"> it may take time longer than usual</div>
                 </div>
                 {/* <div className="text-gray-300 text-center py-20 text-xs sm:text-sm font-medium font-sans ">
                 it may take time longer than usual
             </div> */}
-            </>
+            </div>
         );
     }
 
 
     if (error) {
         return (
-            <div className="text-white text-center py-20 px-4 max-w-xl mx-auto">
+            <div className="text-white h-[80vh] flex flex-col justify-center text-center py-20 px-4 max-w-xl mx-auto">
                 <h2 className="text-base sm:text-lg lg:text-2xl font-semibold font-sans text-red-400 mb-2">Product Not Found</h2>
                 <p className="text-gray-300">{error}</p>
                 {/* <p className="text-gray-400 font-sans sm:text-base text-sm">This product was not found in our database, but we’ll start tracking it from now.</p> */}

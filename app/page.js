@@ -10,12 +10,20 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [suggestedProducts, setSuggestedProducts] = useState([]);
   const [trending, setTrending] = useState([]);
+  const [loadingTrending, setLoadingTrending] = useState(true)
 
   useEffect(() => {
     const fetchTrending = async () => {
-      const res = await fetch('/api/trending-products');
-      const data = await res.json();
-      setTrending(data);
+      try {
+        setLoadingTrending(true) // Loader on
+        const res = await fetch('/api/trending-products');
+        const data = await res.json();
+        setTrending(data);
+      } catch (err) {
+        console.error("❌ Error fetching trending:", err);
+      } finally {
+        setLoadingTrending(false) // Loader off
+      }
     };
     fetchTrending();
   }, []);
@@ -107,42 +115,42 @@ export default function Home() {
       </div> */}
 
 
-<div className="text-center mt-10 mb-24 px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24">
-  <h2 className="text-xl sm:text-3xl font-semibold  mb-4">Search Price History</h2>
+      <div className="text-center mt-10 mb-24 px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24">
+        <h2 className="text-xl sm:text-3xl font-semibold  mb-4">Search Price History</h2>
 
-  <form
-    onSubmit={handleSearch}
-    className="flex flex-col z-10 sm:flex-row justify-center items-center gap-3"
-  >
-    <input
-      type="text"
-      value={url}
-      onChange={(e) => setUrl(e.target.value)}
-      placeholder="Enter Product Link or Name"
-      className="px-4 py-3 rounded-lg z-10 bg-gray-800 border border-gray-700 w-full sm:w-[28rem] focus:outline-none focus:ring-2 focus:ring-indigo-500"
-    />
-    <button
-      type="submit"
-      className="px-6 py-3 bg-red-500 hover:bg-red-600 rounded-lg text-white font-semibold w-full sm:w-auto"
-    >
-      Search
-    </button>
-  </form>
+        <form
+          onSubmit={handleSearch}
+          className="flex flex-col z-10 sm:flex-row justify-center items-center gap-3"
+        >
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="Enter Product Link or Name"
+            className="px-4 py-3 rounded-lg z-10 bg-gray-800 border border-gray-700 w-full sm:w-[28rem] focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button
+            type="submit"
+            className="px-6 py-3 bg-red-500 hover:bg-red-600 rounded-lg text-white font-semibold w-full sm:w-auto"
+          >
+            Search
+          </button>
+        </form>
 
-  {loading && (
-    <p className="mt-4 text-indigo-400 font-medium text-lg animate-pulse">Loading...</p>
-  )}
+        {loading && (
+          <p className="mt-4 text-indigo-400 font-medium text-lg animate-pulse">Loading...</p>
+        )}
 
-  <p className="mt-3 text-gray-400 text-sm">
-    Paste Amazon/Flipkart product URL or type product name to see price history
-  </p>
-  <div
-    onClick={() => checkAndUpdatePrices()}
-    className="mt-3 cursor-pointer text-gray-400 text-sm hover:underline"
-  >
-    Reload
-  </div>
-</div>
+        <p className="mt-3 text-gray-400 text-sm">
+          Paste Amazon/Flipkart product URL or type product name to see price history
+        </p>
+        <div
+          onClick={() => checkAndUpdatePrices()}
+          className="mt-3 cursor-pointer text-gray-400 text-sm hover:underline"
+        >
+          Reload
+        </div>
+      </div>
 
 
       {/* 🔹 Trending Products */}
@@ -163,29 +171,42 @@ export default function Home() {
 
       <div className="mt-12 px-4 mb-20 sm:px-6 md:px-8 lg:px-16 xl:px-24">
         <h3 className="text-xl font-semibold mb-4 text-red-400">🔥 Trending Deals</h3>
+        {loadingTrending ? (
+            <div className="flex justify-center py-10">
+            <div className="relative w-10 h-10">
+              <div className="absolute inset-0 rounded-full border-t-4 t  border-gray-400 animate-spin"></div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
-          {trending.map((prod, idx) => (
-            <Link
-              key={idx}
-              href={`/result?query=${encodeURIComponent(prod.productLink.trim())}`}
-              className="z-10"
-            >
-              <div className="bg-gray-800 rounded-xl shadow-md p-4 hover:scale-105 transition transform duration-300">
-                <img
-                  src={prod.image}
-                  alt={prod.title}
-                  className="rounded-lg h-40 w-full object-contain mb-3"
-                />
-                <h4 className="font-semibold text-sm text-gray-400 line-clamp-2 break-words">
-                  {prod.title}
-                </h4>
-                <p className="text-yellow-600 text-sm">{prod.platform}</p>
-                <p className="text-lg font-bold text-green-600">₹{prod.currentPrice}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+            </div>
+          </div>
+          // <div className="flex justify-center py-10">
+          //   <div className="relative w-16 h-16 rounded-full border-4 border-transparent animate-border-rotate">
+          //     <div className="absolute inset-0 rounded-full border-4 border-transparent border-gradient"></div>
+          //   </div>
+          // </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
+            {trending.map((prod, idx) => (
+              <Link
+                key={idx}
+                href={`/result?query=${encodeURIComponent(prod.productLink.trim())}`}
+                className="z-10"
+              >
+                <div className="bg-gray-800 rounded-xl shadow-md p-4 hover:scale-105 transition transform duration-300">
+                  <img
+                    src={prod.image}
+                    alt={prod.title}
+                    className="rounded-lg h-40 w-full object-contain mb-3"
+                  />
+                  <h4 className="font-semibold text-sm text-gray-400 line-clamp-2 break-words">
+                    {prod.title}
+                  </h4>
+                  <p className="text-yellow-600 text-sm">{prod.platform}</p>
+                  <p className="text-lg font-bold text-green-600">₹{prod.currentPrice}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
 

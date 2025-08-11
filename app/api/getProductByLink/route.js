@@ -37,7 +37,7 @@ function normalizeFlipkartURL(url) {
 }
 
 
-const SCRAPER_SERVER_URL = process.env.SCRAPER_API_URL;
+const SCRAPER_SERVER_URL = process.env.NEXT_PUBLIC_SCRAPER_API_URL;
 // const SCRAPER_SERVER_URL = "https://scrap-product-server.onrender.com/scrape";
 
 export async function GET(req) {
