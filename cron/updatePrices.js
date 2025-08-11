@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const SCRAPER_API_URL = process.env.SCRAPER_API_URL;
+const SCRAPER_API_URL = process.env.NEXT_PUBLIC_SCRAPER_API_URL;
 
 
 export const updateProductPrices = async () => {
