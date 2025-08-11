@@ -21,11 +21,11 @@ export const updateProductPrices = async () => {
 
   const products = await Product.find();
   // / Prepare array of URLs for scraper API
-  // const urls = products.map(p => p.productLink);
-  const urls = [
-    { productLink: "https://www.amazon.in/dp/B0F4N3T2PH" },
-    { productLink: "https://www.flipkart.com/jbl-tune-520-bt-57hr-playtime-pure-bass-multi-connect-5-3le-bluetooth/p/itm4b198abbdbe24?pid=ACCGQZVZ4ZQZKZYP" },
-  ];
+  const urls = products.map(p => p.productLink);
+  // const urls = [
+  //   { productLink: "https://www.amazon.in/dp/B0F4N3T2PH" },
+  //   { productLink: "https://www.flipkart.com/jbl-tune-520-bt-57hr-playtime-pure-bass-multi-connect-5-3le-bluetooth/p/itm4b198abbdbe24?pid=ACCGQZVZ4ZQZKZYP" },
+  // ];
   // Hit scraper API with URLs array
   const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
     method: 'POST',
