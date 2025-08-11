@@ -7,14 +7,15 @@ import { format, parseISO } from "date-fns";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
 
+const predictionurl = process.env.PREDICTION_API_URL;
 
 
 
 function ResultContent() {
     const searchParams = useSearchParams();
     const query = searchParams.get("query");
-    
-    
+
+
     const [product, setProduct] = useState(null);
     const [expandedHistory, setexpandedHistory] = useState(null);
 
@@ -63,18 +64,57 @@ function ResultContent() {
     };
 
 
-    const calculateDropChances = (days) => {
-        console.log(days)
-        console.log(PredictedHistory)
-        if (!PredictedHistory || PredictedHistory.length === 0 || !product) return 0;
+    // const calculateDropChances = (days) => {
+    //     console.log(days)
+    //     console.log(PredictedHistory)
+    //     if (!PredictedHistory || PredictedHistory.length === 0 || !product) return 0;
 
+    //     const selectedPredictions = PredictedHistory.slice(0, days);
+    //     console.log(selectedPredictions)
+    //     const drops = selectedPredictions.filter(p => p.predictedPrice < product.currentPrice);
+    //     console.log(drops)
+    //     return Math.round((drops.length / days) * 100);
+    // };
+
+    const calculateDropChances = (days) => {
+        if (!PredictedHistory || PredictedHistory.length === 0 || !product) return 0;
+    
+        
         const selectedPredictions = PredictedHistory.slice(0, days);
         console.log(selectedPredictions)
-        const drops = selectedPredictions.filter(p => p.predictedPrice < product.currentPrice);
-        console.log(drops)
-        return Math.round((drops.length / days) * 100);
+    
+        let totalChance = 0;
+    
+        selectedPredictions.forEach(p => {
+            const predicted = p.predictedPrice;   // yhat
+            const lowerBound = p.yhat_lower ?? predicted;
+            const upperBound = p.yhat_upper ?? predicted;
+            const actual = product.currentPrice;
+    
+            // Base calculation
+            let dropChance = ((actual - predicted) / actual) * 100;
+    
+            // Confidence interval adjustment
+            const lowerDiff = ((actual - lowerBound) / actual) * 100;
+            const upperDiff = ((actual - upperBound) / actual) * 100;
+    
+            dropChance = (dropChance + lowerDiff + upperDiff) / 3;
+    
+            // Small change ignore
+            if (Math.abs(dropChance) < 2) dropChance = 0;
+    
+            // Limit max 95%
+            if (dropChance > 95) dropChance = 95;
+    
+            // Avoid negative
+            if (dropChance < 0) dropChance = 0;
+    
+            totalChance += dropChance;
+        });
+    
+        // Average chance across days
+        return Math.round(totalChance / days);
     };
-
 
     // useEffect(() => {
     //     if (!expandedHistory || expandedHistory.length === 0) return;
@@ -110,10 +150,12 @@ function ResultContent() {
 
     useEffect(() => {
         if (!expandedHistory || expandedHistory.length === 0) return;
-    
+
         const fetchPrediction = async () => {
             try {
-                const res = await fetch("http://localhost:8000/predict", {
+
+                const predictionurl = process.env.NEXT_PUBLIC_PREDICTION_API_URL;
+                const res = await fetch(`${predictionurl}/predict`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -122,13 +164,13 @@ function ResultContent() {
                         history: expandedHistory
                     }),
                 });
-    
+
                 if (!res.ok) {
                     console.warn("Prediction API returned an error:", res.status);
                     setPredictedHistory([]); // Default empty array
                     return;
                 }
-    
+
                 let predictionData = [];
                 try {
                     predictionData = await res.json();
@@ -137,25 +179,27 @@ function ResultContent() {
                     setPredictedHistory([]);
                     return;
                 }
-    
+
                 const formattedPredictionData = Array.isArray(predictionData)
                     ? predictionData.map(item => ({
                         date: item.ds,
                         predictedPrice: Math.round(item.yhat),
+                        yhat_lower: Math.round(item.yhat_lower),
+                        yhat_upper: Math.round(item.yhat_upper)
                     }))
                     : [];
-    
+
                 setPredictedHistory(formattedPredictionData);
-    
+
             } catch (error) {
-                console.error("Prediction fetch error:", error);
+                console.log("Prediction fetch error:", error);
                 setPredictedHistory([]); // Fallback to empty
             }
         };
-    
+
         fetchPrediction();
     }, [expandedHistory]);
-    
+
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -339,9 +383,16 @@ function ResultContent() {
 
     if (loading) {
         return (
-            <div className="text-white text-center py-20 text-base sm:text-xl font-medium animate-pulse">
-                🔍 Searching for the product...
-            </div>
+            <>
+                <div className="text-white text-center py-20 text-base sm:text-xl font-medium animate-pulse">
+
+                    🔍 Searching for the product...
+                    <div className="text-gray-300 text-xs sm:text-sm  font-sans">it may take time longer than usual</div>
+                </div>
+                {/* <div className="text-gray-300 text-center py-20 text-xs sm:text-sm font-medium font-sans ">
+                it may take time longer than usual
+            </div> */}
+            </>
         );
     }
 
@@ -480,12 +531,12 @@ function ResultContent() {
                         <div className={`mt-4 flex flex-col font-sans transition-all ${showAlertForm ? "hidden" : ""} text-sm sm:text-base`}>
                             <div className="flex items-start">
 
-                            <button onClick={() => setShowAlertForm(!showAlertForm)} className="px-4 py-2 bg-blue-500 hover:bg-blue-600  text-white rounded">
-                                Drop Price Alert 
-                            </button>
+                                <button onClick={() => setShowAlertForm(!showAlertForm)} className="px-4 py-2 bg-blue-500 hover:bg-blue-600  text-white rounded">
+                                    Drop Price Alert
+                                </button>
                             </div>
                             {alertMessage && (
-                                <span className= "text-xs sm:text-sm text-green-500">{alertMessage}</span>
+                                <span className="text-xs sm:text-sm text-green-500">{alertMessage}</span>
                             )}
                         </div>
 
@@ -499,7 +550,7 @@ function ResultContent() {
                                         placeholder="Your Name"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full p-2 sm:p-3 rounded-lg font-sans text-sm sm:text-base bg-white/5  backdrop-blur-md"
+                                        className="w-full p-2 sm:p-3 outline-none rounded-lg font-sans text-sm sm:text-base bg-white/5  backdrop-blur-md"
                                         required
                                     />
                                     <input
@@ -507,7 +558,7 @@ function ResultContent() {
                                         placeholder="Your Email"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full p-2 sm:p-3 rounded-lg bg-white/5 font-sans text-sm sm:text-base  backdrop-blur-md"
+                                        className="w-full p-2 sm:p-3 outline-none rounded-lg bg-white/5 font-sans text-sm sm:text-base  backdrop-blur-md"
                                         required
                                     />
                                     <button
@@ -625,7 +676,7 @@ function ResultContent() {
                                     strokeWidth={2}
                                     fillOpacity={0.2}
                                     dot={false}
-                                    activeDot={{ r: 6, fill: "#00bcd4", stroke: "#fff", strokeWidth: 2, style: { outline: "none" } }}
+                                    activeDot={{ r: 6, fill: "#00bcd4", stroke: "#fff", strokeWidth: 2, style: { filter: "drop-shadow(0 0 6px #60a5fa)", transition: "0.3s ease" } }}
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
@@ -746,8 +797,8 @@ function ResultContent() {
 
 export default function ResultPage() {
     return (
-      <Suspense fallback={<div>Loading search results...</div>}>
-        <ResultContent />
-      </Suspense>
+        <Suspense fallback={<div>Loading search results...</div>}>
+            <ResultContent />
+        </Suspense>
     );
-  }
+}

@@ -156,7 +156,7 @@ export async function scrapeFlipkart(url) {
       time: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
       platform: "flipkart",
       productLink: url,
-      amazonLink: "",
+      amazonLink: "",   
       priceHistory: [
         { price: result.price, date: new Date().toLocaleDateString('en-CA') },
       ],

@@ -136,12 +136,12 @@ export default function Home() {
   <p className="mt-3 text-gray-400 text-sm">
     Paste Amazon/Flipkart product URL or type product name to see price history
   </p>
-  {/* <div
+  <div
     onClick={() => checkAndUpdatePrices()}
     className="mt-3 cursor-pointer text-gray-400 text-sm hover:underline"
   >
     Reload
-  </div> */}
+  </div>
 </div>
 
 

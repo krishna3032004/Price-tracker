@@ -38,7 +38,6 @@ const productSchema = new mongoose.Schema({
   },
   average: {
     type: Number,
-    required: true,
   },
   discount: {
     type: Number,

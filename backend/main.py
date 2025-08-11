@@ -1,3 +1,4 @@
+# main.py
 import pandas as pd
 from prophet import Prophet
 from fastapi import FastAPI
@@ -8,9 +9,16 @@ from typing import List
 app = FastAPI()
 
 # CORS setup
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # ya ["http://localhost:3000"] agar specific chahiye
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -94,7 +102,7 @@ def predict_price(history: History):
                 price = lowest_price
             else:
                 price = round_to_known_prices(row["yhat"])
-            result.append({"ds": date_str, "yhat": price})
+            result.append({"ds": date_str, "yhat": price, "yhat_lower": float(row["yhat_lower"]),"yhat_upper": float(row["yhat_upper"])})
 
         print(result)    
         return result

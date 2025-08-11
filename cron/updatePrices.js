@@ -1,7 +1,6 @@
 // cron/updatePrices.js
 import mongoose from 'mongoose';
 import Product from '@/models/Product';
-import { scrapePrice } from '@/utils/scrapePrice';
 import connectDB from '@/db/connectDB';
 import nodemailer from "nodemailer"
 
@@ -13,6 +12,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const SCRAPER_API_URL = process.env.SCRAPER_API_URL;
 
 
 export const updateProductPrices = async () => {
@@ -20,16 +20,44 @@ export const updateProductPrices = async () => {
   await connectDB()
 
   const products = await Product.find();
+  // / Prepare array of URLs for scraper API
+  // const urls = products.map(p => p.productLink);
+  const urls = [
+    { productLink: "https://www.amazon.in/dp/B0F4N3T2PH" },
+    { productLink: "https://www.flipkart.com/jbl-tune-520-bt-57hr-playtime-pure-bass-multi-connect-5-3le-bluetooth/p/itm4b198abbdbe24?pid=ACCGQZVZ4ZQZKZYP" },
+  ];
+  // Hit scraper API with URLs array
+  const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ urls }),
+  });
+
+  if (!response.ok) {
+    console.error('Failed to fetch prices from scraper API');
+    return;
+  }
+  const jsonResponse = await response.json();
+  console.log(jsonResponse); // Pure response dekhne ke liye
+  
+  const scrapedPrices = jsonResponse.results; // yeh sahi property hai
+  console.log(scrapedPrices);
+
 
   for (const product of products) {
+    const scrapedData = scrapedPrices.find(sp => sp.url === product.productLink);
+    if (!scrapedData) {
+      console.log(`No price data for ${product.title}`);
+      continue;
+    }
     const latestDBPrice = product.priceHistory?.[product.priceHistory.length - 1]?.price;
-    const currentPrice = await scrapePrice(product.productLink);
+    const currentPrice =scrapedData.price;
 
     console.log(`Checking: ${product.name} - DB: ${latestDBPrice}, Now: ${currentPrice}`);
 
     if (currentPrice && currentPrice !== latestDBPrice) {
 
-      
+
 
       product.priceHistory.push({ price: currentPrice, date: new Date() });
 
