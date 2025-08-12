@@ -11,7 +11,7 @@ export default function Footer() {
           
           {/* ✅ Brand & Description */}
           <div>
-            <h2 className="sm:text-xl text-lg font-bold text-indigo-400">📊 PriceTrackr</h2>
+            <h2 className="sm:text-xl text-lg font-bold text-indigo-400">📉 PriceTrackr</h2>
             <p className="mt-3 text-sm leading-relaxed text-gray-300">
               PriceTrackr helps you monitor and track product prices on Amazon & Flipkart.  
               Stay updated on price drops and get notified instantly.

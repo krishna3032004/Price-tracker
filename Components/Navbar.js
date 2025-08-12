@@ -7,7 +7,7 @@ export default function Navbar() {
           
           {/* ✅ Logo */}
           <Link href={'/'}><h1 className="text-xl sm:text-2xl font-bold text-indigo-400 hover:text-indigo-300 transition">
-            📊 PriceTrackr
+            📉 PriceTrackr
           </h1></Link>
   
           {/* ✅ Links */}
