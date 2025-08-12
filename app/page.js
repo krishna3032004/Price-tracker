@@ -12,6 +12,8 @@ export default function Home() {
   const [trending, setTrending] = useState([]);
   const [loadingTrending, setLoadingTrending] = useState(true)
 
+  const [show, setShow] = useState(true);
+
   useEffect(() => {
     const fetchTrending = async () => {
       try {
@@ -72,47 +74,6 @@ export default function Home() {
 
       <div className="absolute top-1/3 left-1/2 w-80 h-80 bg-pink-500 rounded-full blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
-      {/* 🔹 Navbar */}
-      {/* <nav className="flex items-center justify-between px-8 py-4 bg-gray-950">
-        <h1 className="text-2xl font-bold text-indigo-400">📊 PriceTrackr</h1>
-        <div className="space-x-4">
-          <button className="hover:text-indigo-400">Home</button>
-          <button className="hover:text-indigo-400">Deals</button>
-          <button className="hover:text-indigo-400">About</button>
-        </div>
-      </nav> */}
-
-      {/* 🔹 Search Section */}
-      {/* <div className="text-center mt-10">
-        <h2 className="text-3xl font-semibold mb-4">Search Price History</h2>
-        <form
-          onSubmit={handleSearch}
-          className="flex justify-center gap-3"
-        >
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter Product Link or Name"
-            className="px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 w-96 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <button
-            type="submit"
-            className="px-6 py-3 bg-red-500 hover:bg-red-600 rounded-lg text-white font-semibold"
-          >
-            Search
-          </button>
-        </form>
-        {loading && (
-          <p className="mt-4 text-indigo-400 font-medium text-lg animate-pulse">Loading...</p>
-        )}
-
-
-        <p className="mt-3 text-gray-400 text-sm">
-          Paste Amazon/Flipkart product URL or type product name to see price history
-        </p>
-        <div onClick={() => checkAndUpdatePrices()} className="mt-3 cursor-pointer text-gray-400 text-sm">Reload</div>
-      </div> */}
 
 
       <div className="text-center mt-10 mb-24 px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24">
@@ -144,45 +105,51 @@ export default function Home() {
         <p className="mt-3 text-gray-400 text-sm">
           Paste Amazon/Flipkart product URL or type product name to see price history
         </p>
-        <div
+        {/* Notice Box */}
+        {/* <div className="mt-5 p-4 bg-yellow-900 border border-yellow-500 rounded-lg text-yellow-200 text-sm max-w-2xl mx-auto shadow-md">
+          <strong>ℹ Note:</strong> If you search for a product link that is <span className="text-yellow-300 font-semibold">not in our database</span>,
+          the first time loading may take up to <span className="text-yellow-300 font-semibold">1 minute</span> as we scrape the product details from its website.
+          Once scraped, the product will be tracked automatically and will load instantly in future searches.
+          
+        </div> */}
+        {show && 
+        <div className="relative mt-5 p-4 bg-yellow-900 border border-yellow-500 rounded-lg text-yellow-200 text-xs sm:text-sm max-w-2xl mx-auto shadow-md">
+          {/* Close Button */}
+          <button
+            onClick={() => setShow(false)}
+            className="absolute top-2 right-2 text-yellow-400 hover:text-yellow-200 text-lg font-bold"
+            aria-label="Close"
+          >
+            ✖
+          </button>
+
+          <strong>ℹ Note:</strong> If you search for a product link that is{" "}
+          <span className="text-yellow-300 font-semibold">not in our database</span>,
+          the first time loading may take up to{" "}
+          <span className="text-yellow-300 font-semibold">1 minute</span> as we scrape the product details from its website.
+          Once scraped, the product will be tracked automatically and will load instantly in future searches.
+        </div>}
+        {/* <div
           onClick={() => checkAndUpdatePrices()}
           className="mt-3 cursor-pointer text-gray-400 text-sm hover:underline"
         >
           Reload
-        </div>
+        </div> */}
       </div>
 
 
-      {/* 🔹 Trending Products */}
-      {/* <div className="px-10 mt-12 mx-24">
-        <h3 className="text-xl font-semibold mb-4 text-red-400">🔥 Trending Deals</h3>
 
-        <div className="grid grid-cols-2  md:grid-cols-4  gap-10">
-          {trending.map((prod, idx) => (
-            <Link  key={idx} className="z-10"  href={`/result?query=${encodeURIComponent(prod.productLink.trim())}`}><div className="bg-gray-800 z-10 rounded-xl shadow-md p-4 hover:scale-105 transition">
-              <img src={prod.image} alt={prod.title} className="rounded-lg h-40 w-full object-contain mb-3" />
-              <h4 className="font-semibold text-sm text-gray-400  line-clamp-2 break-words">{prod.title}</h4>
-              <p className="text-yellow-600 text-sm">{prod.platform}</p>
-              <p className="text-lg font-bold text-green-600">₹{prod.currentPrice}</p>
-            </div></Link>
-          ))}
-        </div>
-      </div> */}
 
       <div className="mt-12 px-4 mb-20 sm:px-6 md:px-8 lg:px-16 xl:px-24">
         <h3 className="text-xl font-semibold mb-4 text-red-400">🔥 Trending Deals</h3>
         {loadingTrending ? (
-            <div className="flex justify-center py-10">
+          <div className="flex justify-center py-10">
             <div className="relative w-10 h-10">
               <div className="absolute inset-0 rounded-full border-t-4 t  border-gray-400 animate-spin"></div>
 
             </div>
           </div>
-          // <div className="flex justify-center py-10">
-          //   <div className="relative w-16 h-16 rounded-full border-4 border-transparent animate-border-rotate">
-          //     <div className="absolute inset-0 rounded-full border-4 border-transparent border-gradient"></div>
-          //   </div>
-          // </div>
+
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
             {trending.map((prod, idx) => (
