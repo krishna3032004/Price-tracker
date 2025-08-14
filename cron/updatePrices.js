@@ -1,7 +1,7 @@
 // cron/updatePrices.js
 import mongoose from 'mongoose';
-import Product from '@/models/Product';
-import connectDB from '@/db/connectDB';
+import Product from '../models/Product.js';
+import connectDB from '../db/connectDB.js';
 import nodemailer from "nodemailer"
 
 const transporter = nodemailer.createTransport({
@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 const SCRAPER_API_URL = process.env.NEXT_PUBLIC_SCRAPER_API_URL;
 
 
-export const updateProductPrices = async () => {
+export const updatePrices = async () => {
 
   await connectDB()
 
