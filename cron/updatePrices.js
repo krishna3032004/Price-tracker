@@ -18,6 +18,7 @@ const SCRAPER_API_URL = process.env.NEXT_PUBLIC_SCRAPER_API_URL;
 export const updatePrices = async () => {
 
   await connectDB()
+  console.log("abhe chla ki nhi")
 
   const products = await Product.find();
   // / Prepare array of URLs for scraper API
@@ -105,3 +106,17 @@ export const updatePrices = async () => {
   }
 
 };
+
+
+// Call the function if run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  updatePrices()
+    .then(() => {
+      console.log("✅ Price update script finished");
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error("❌ Error running updatePrices:", err);
+      process.exit(1);
+    });
+}
