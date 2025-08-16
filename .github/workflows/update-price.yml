@@ -8,6 +8,10 @@ on:
 jobs:
   run-update:
     runs-on: ubuntu-latest
+    env:
+      EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+      NEXT_PUBLIC_SCRAPER_API_URL: ${{ secrets.NEXT_PUBLIC_SCRAPER_API_URL }}
 
     steps:
       - name: Checkout repository
