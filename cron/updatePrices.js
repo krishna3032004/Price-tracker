@@ -54,13 +54,17 @@ export const updatePrices = async () => {
   //   }
   //   // const data = await response.json();
   //   console.log("Batch result:", data);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(),300000); // 2 min
   // }
   const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ urls }),
     // dispatcher: agent
+    signal: controller.signal,
   });
+  clearTimeout(timeout);
 
   if (!response.ok) {
     console.error('Failed to fetch prices from scraper API');
