@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import connectDB from '../db/connectDB.js';
 import nodemailer from "nodemailer"
-import { Agent } from "undici";
+// import { Agent } from "undici";
 
-const agent = new Agent({
-  headersTimeout: 300_000, // 2 min
-  bodyTimeout: 300_000,    // 2 min
-});
+// const agent = new Agent({
+//   headersTimeout: 300_000, // 2 min
+//   bodyTimeout: 300_000,    // 2 min
+// });
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', // you can change to Outlook, etc.
@@ -59,7 +59,7 @@ export const updatePrices = async () => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ urls }),
-    dispatcher: agent
+    // dispatcher: agent
   });
 
   if (!response.ok) {
