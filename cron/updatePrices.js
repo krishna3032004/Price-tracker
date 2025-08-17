@@ -47,12 +47,14 @@ export const updatePrices = async () => {
     });
     const data = await response.json();
 
+    console.log(data)
 
     console.log("Batch result:", data);
     // ✅ Push batch results into scrapedPrices
     if (data?.results) {
       scrapedPrices.push(...data.results);
     }
+    console.log(scrapedPrices)
   }
 
 
