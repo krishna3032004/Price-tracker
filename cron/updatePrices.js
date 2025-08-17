@@ -3,6 +3,12 @@ import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import connectDB from '../db/connectDB.js';
 import nodemailer from "nodemailer"
+import { fetch, Agent } from "undici";
+
+const agent = new Agent({
+  headersTimeout: 300_000, // 2 min
+  bodyTimeout: 300_000,    // 2 min
+});
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', // you can change to Outlook, etc.
@@ -29,10 +35,31 @@ export const updatePrices = async () => {
   //   { productLink: "https://www.flipkart.com/jbl-tune-520-bt-57hr-playtime-pure-bass-multi-connect-5-3le-bluetooth/p/itm4b198abbdbe24?pid=ACCGQZVZ4ZQZKZYP" },
   // ];
   // Hit scraper API with URLs array
+  // const chunkArray = (arr, size) =>
+  //   arr.reduce((acc, _, i) =>
+  //     (i % size ? acc : [...acc, arr.slice(i, i + size)]), []);
+
+  // const chunks = chunkArray(products, 5);
+
+  // for (const batch of chunks) {
+  //   const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ urls: batch.map(p => ({ productLink: p.productLink })) }),
+  //   });
+
+  //   if (!response.ok) {
+  //     console.error('Failed to fetch prices from scraper API');
+  //     return;
+  //   }
+  //   // const data = await response.json();
+  //   console.log("Batch result:", data);
+  // }
   const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ urls }),
+    dispatcher: agent
   });
 
   if (!response.ok) {
@@ -41,7 +68,7 @@ export const updatePrices = async () => {
   }
   const jsonResponse = await response.json();
   console.log(jsonResponse); // Pure response dekhne ke liye
-  
+
   const scrapedPrices = jsonResponse.results; // yeh sahi property hai
   console.log(scrapedPrices);
 
@@ -53,7 +80,7 @@ export const updatePrices = async () => {
       continue;
     }
     const latestDBPrice = product.priceHistory?.[product.priceHistory.length - 1]?.price;
-    const currentPrice =scrapedData.price;
+    const currentPrice = scrapedData.price;
 
     console.log(`Checking: ${product.name} - DB: ${latestDBPrice}, Now: ${currentPrice}`);
 
