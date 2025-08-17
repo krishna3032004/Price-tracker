@@ -30,50 +30,53 @@ export const updatePrices = async () => {
   // / Prepare array of URLs for scraper API
   // const urls = products.map(p => p.productLink);
   const urls = products.map(p => ({ productLink: p.productLink }));
-  // const urls = [
-  //   { productLink: "https://www.amazon.in/dp/B0F4N3T2PH" },
-  //   { productLink: "https://www.flipkart.com/jbl-tune-520-bt-57hr-playtime-pure-bass-multi-connect-5-3le-bluetooth/p/itm4b198abbdbe24?pid=ACCGQZVZ4ZQZKZYP" },
-  // ];
-  // Hit scraper API with URLs array
-  // const chunkArray = (arr, size) =>
-  //   arr.reduce((acc, _, i) =>
-  //     (i % size ? acc : [...acc, arr.slice(i, i + size)]), []);
+  console.log(urls)
+  const chunkArray = (arr, size) =>
+    arr.reduce((acc, _, i) =>
+      (i % size ? acc : [...acc, arr.slice(i, i + size)]), []);
 
-  // const chunks = chunkArray(products, 5);
+  const chunks = chunkArray(urls, 5)
+  let scrapedPrices = [];
+  for (const batch of chunks) {
+    console.log(batch)
+    const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ urls: batch.map(p => ({ productLink: p.productLink })) }),
+      // signal: controller.signal
+    });
+    const data = await response.json();
 
-  // for (const batch of chunks) {
-  //   const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ urls: batch.map(p => ({ productLink: p.productLink })) }),
-  //   });
 
-  //   if (!response.ok) {
-  //     console.error('Failed to fetch prices from scraper API');
-  //     return;
-  //   }
-  //   // const data = await response.json();
-  //   console.log("Batch result:", data);
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(),600000); // 2 min
-  // }
-  const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ urls }),
-    // dispatcher: agent
-    signal: controller.signal,
-  });
-  clearTimeout(timeout);
-
-  if (!response.ok) {
-    console.error('Failed to fetch prices from scraper API');
-    return;
+    console.log("Batch result:", data);
+    // ✅ Push batch results into scrapedPrices
+    if (data?.results) {
+      scrapedPrices.push(...data.results);
+    }
   }
-  const jsonResponse = await response.json();
-  console.log(jsonResponse); // Pure response dekhne ke liye
 
-  const scrapedPrices = jsonResponse.results; // yeh sahi property hai
+
+
+  // const controller = new AbortController();
+  // const timeout = setTimeout(() => controller.abort(), 600000); // 2 min
+  // // }
+  // const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ urls }),
+  //   // dispatcher: agent
+  //   signal: controller.signal,
+  // });
+  // clearTimeout(timeout);
+
+  // if (!response.ok) {
+  //   console.error('Failed to fetch prices from scraper API');
+  //   return;
+  // }
+  // const jsonResponse = await response.json();
+  // console.log(jsonResponse); // Pure response dekhne ke liye
+
+  // const scrapedPrices = jsonResponse.results; // yeh sahi property hai
   console.log(scrapedPrices);
 
 
