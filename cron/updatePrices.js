@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import connectDB from '../db/connectDB.js';
 import nodemailer from "nodemailer"
-import { fetch, Agent } from "undici";
+import { Agent } from "undici";
 
 const agent = new Agent({
   headersTimeout: 300_000, // 2 min
