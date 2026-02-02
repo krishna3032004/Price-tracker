@@ -1,4 +1,6 @@
 // cron/updatePrices.js
+console.log("🔥 SCRIPT FILE LOADED");
+
 import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import connectDB from '../db/connectDB.js';
@@ -23,8 +25,12 @@ const SCRAPER_API_URL = process.env.NEXT_PUBLIC_SCRAPER_API_URL;
 
 export const updatePrices = async () => {
 
+  console.log("⏳ Connecting to DB...");
+
   await connectDB()
-  console.log("abhe chla ki nhi")
+  console.log("✅ DB Connected");
+
+  // console.log("abhe chla ki nhi")
 
   const products = await Product.find();
   // / Prepare array of URLs for scraper API
@@ -37,6 +43,7 @@ export const updatePrices = async () => {
 
   const chunks = chunkArray(urls, 5)
   let scrapedPrices = [];
+<<<<<<< HEAD
   for (const batch of chunks) {
     console.log(batch)
     const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
@@ -49,6 +56,28 @@ export const updatePrices = async () => {
 
     console.log(data)
 
+=======
+
+
+  // await fetch(`${SCRAPER_API_URL}/health`);
+  // await new Promise(r => setTimeout(r, 60000)); // 60 sec wait
+
+
+
+
+  for (const batch of chunks) {
+    console.log(batch)
+    const response = await fetch(`${SCRAPER_API_URL}/api/scrape-prices`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ urls: batch.map(p => ({ productLink: p.productLink })) }),
+      // signal: controller.signal
+    });
+    const data = await response.json();
+
+    console.log(data)
+
+>>>>>>> 1b9529b (Updated DB connect and cron script)
     console.log("Batch result:", data);
     // ✅ Push batch results into scrapedPrices
     if (data?.results) {
