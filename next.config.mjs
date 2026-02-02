@@ -18,7 +18,8 @@ const nextConfig = {
       use: 'ignore-loader'
     });
     return config;
-  }
+  },
+  turbopack: {} 
 };
 
 export default nextConfig;
